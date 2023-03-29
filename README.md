@@ -38,8 +38,8 @@
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
-|loader|StateDictLoader|(model name)|`DICT`|aggregate sampler's setting to dict|
-|model|Dict2Model|`DICT`, (config_file)|`MODEL`|instantiate a model from given dict|
+|loader|StateDictLoader|(model name)|`DICT`|load state_dict|
+|model|Dict2Model|`DICT`, (config_file)|`MODEL`|instantiate a model from given state_dict|
 |model|StateDictMerger|`DICT`, `DICT`, `FLOAT`|`MODEL`, `CLIP`, `VAE`|merge two or three models|
 |model|StateDictMergerBlockWeighted|`DICT`, `DICT`|`DICT`|merge two models with per-block weights|
 
