@@ -1,5 +1,7 @@
 # ComfyUI custom nodes
 
+![](./nodes.png)
+
 ## Basic nodes
 
 |category|node name|input type|output type|desc.|
@@ -28,7 +30,7 @@
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
-|sampling|KSamplerSetting|`MODEL`, `CONDITIONING`, `CONDITIONING`, `LATENT`|`DICT`|aggregate sampler's setting to dict|
+|sampling|KSamplerSetting|`MODEL`, `CONDITIONING`, `CONDITIONING`, `LATENT`|`DICT`|aggregate sampler's setting to single dict|
 |sampling|KSamplerOverrided|various|`LATENT`|override sampler's setting defined by `KSamplerSetting`|
 |sampling|KSamplerXYZ|various|`LATENT`|generate latents with values|
 
