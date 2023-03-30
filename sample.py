@@ -234,11 +234,11 @@ class KSamplerXYZ:
             },
             'optional': {
                 'model': ('MODEL',),
-                'seed': ('TEXT',),
-                'steps': ('TEXT',),
-                'cfg': ('TEXT',),
-                'sampler_name': ('TEXT',),
-                'scheduler': ('TEXT', ),
+                'seed': ('STRING', { 'multiline': True, 'default': '' }),
+                'steps': ('STRING', { 'multiline': True, 'default': '' }),
+                'cfg': ('STRING', { 'multiline': True, 'default': '' }),
+                'sampler_name': ('STRING', { 'multiline': True, 'default': '' }),
+                'scheduler': ('STRING', { 'multiline': True, 'default': '' }),
             }
         }
 

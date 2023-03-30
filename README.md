@@ -2,22 +2,6 @@
 
 ![](./nodes.png)
 
-## Basic nodes
-
-|category|node name|input type|output type|desc.|
-| --- | --- | --- | --- | --- |
-|value|Text|`STRING`|`TEXT`| - |
-|value|Integer|`INT`|`Integer`| - |
-|value|Float|`FLOAT`|`Float`| - |
-|value|SamplerName|(dropdown)|`SamplerName`| - |
-|value|SchedulerName|(dropdown)|`SchedulerName`| - |
-
-## CLIP nodes
-
-|category|node name|input type|output type|desc.|
-| --- | --- | --- | --- | --- |
-|conditioning|CLIPTextEncode2|`CLIP`, `TEXT`|`CONDITIONING`|external prompt input|
-
 ## Latent nodes
 
 |category|node name|input type|output type|desc.|

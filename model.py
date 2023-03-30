@@ -279,7 +279,7 @@ class StateDictMergerBlockWeighted(StateDictMerger):
         d['required']['base_alpha'] = d['required']['alpha']
         del d['required']['alpha']
         del d['optional']['model_C']
-        d['required']['alphas'] = ('TEXT',)
+        d['required']['alphas'] = ('STRING', { 'multiline': True, 'default': '' })
         return d
 
     def execute(
