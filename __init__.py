@@ -1,7 +1,8 @@
 from .randomlatent import RandomLatentImage
 from .vae import VAEDecodeBatched, VAEEncodeBatched
 from .sample import KSamplerSetting, KSamplerOverrided, KSamplerXYZ
-from .model import StateDictLoader, Dict2Model, StateDictMerger, StateDictMergerBlockWeighted
+from .model import StateDictLoader, Dict2Model
+from .model_merge import StateDictMerger, StateDictMergerBlockWeighted
 from .image import GridImage
 
 NODE_CLASS_MAPPINGS = {
