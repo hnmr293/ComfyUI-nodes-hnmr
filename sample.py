@@ -252,6 +252,9 @@ class KSamplerXYZ:
             setting['latent'] = setting['latent_image']
             del setting['latent_image']
         
+        # ignore empty string
+        kwargs = { k: v for k, v in kwargs.items() if not isinstance(v, str) or len(v) != 0 }
+        
         setting = { **setting, **kwargs }
         
         if isinstance(setting.get('seed', None), str):
@@ -277,7 +280,7 @@ class KSamplerXYZ:
             if k in kwargs and isinstance(v, (list, tuple)):
                 print(f'XYZ {k}: {v}')
         
-        return common_ksampler_xyz(**setting)
+        return common_ksampler_xyz(**setting) # type: ignore
     
     def parse(self, input: str, cont: Union[Callable[[str],Any],None]):
         vs = [ x.strip() for x in input.split(',') ]
