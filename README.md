@@ -26,6 +26,9 @@
 |model|Dict2Model|`DICT`, (config_file)|`MODEL`|instantiate a model from given state_dict|
 |model|StateDictMerger|`DICT`, `DICT`, `FLOAT`|`MODEL`, `CLIP`, `VAE`|merge two or three models|
 |model|StateDictMergerBlockWeighted|`DICT`, `DICT`|`DICT`|merge two models with per-block weights|
+|model|ModelIter|`MODEL`, `MODEL`|`MODEL`|iterate models|
+|model|CLIPlIter|`CLIP`, `CLIP`|`CLIP`|iterate CLIPs|
+|model|VAElIter|`VAE`, `VAE`|`VAE`|iterate VAEs|
 
 ## Output nodes
 

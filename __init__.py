@@ -1,8 +1,9 @@
 from .randomlatent import RandomLatentImage
 from .vae import VAEDecodeBatched, VAEEncodeBatched
 from .sample import KSamplerSetting, KSamplerOverrided, KSamplerXYZ
-from .model import StateDictLoader, Dict2Model
-from .model_merge import StateDictMerger, StateDictMergerBlockWeighted
+from .model.loader import StateDictLoader, Dict2Model
+from .model.iter import ModelIter, CLIPIter, VAEIter
+from .model.merge import StateDictMerger, StateDictMergerBlockWeighted
 from .image import GridImage
 
 NODE_CLASS_MAPPINGS = {
@@ -34,6 +35,15 @@ NODE_CLASS_MAPPINGS = {
     
     ## creates model from state_dict loaded by `StateDictLoader`
     'Dict2Model': Dict2Model,
+    
+    ## iterate two models for KSamplerXYZ
+    'ModelIter': ModelIter,
+    
+    ## iterate two CLIPs for KSamplerXYZ
+    'CLIPIter': CLIPIter,
+    
+    ## iterate two VAEs for KSamplerXYZ
+    'VAEIter': VAEIter,
     
     ## merge two (weighted sum) or three (add difference) state_dict
     'StateDictMerger': StateDictMerger,

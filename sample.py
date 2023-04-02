@@ -1,11 +1,12 @@
 import re
 from itertools import product
-from typing import Callable, List, Dict, Any, Union, Iterable
+from typing import Callable, List, Dict, Any, Union, Tuple, cast
 import torch
 import model_management # type: ignore
 import comfy.samplers
 from nodes import common_ksampler
 from comfy.sd import ModelPatcher
+from .model.iter import iterize_model, CondForModels
 
 re_int = re.compile(r"\s*([+-]?\s*\d+)\s*")
 re_float = re.compile(r"\s*([+-]?\s*\d+(?:.\d*)?)\s*")
@@ -46,8 +47,83 @@ def get_cfg(noises: torch.Tensor, latent_image: torch.Tensor, cfgs: List[float])
     cf = torch.FloatTensor(cfgs * noises.shape[0])
     return torch.cat(ns), torch.cat(lat), cf[...,None,None,None]
 
+def process_cond(
+    conds: List[List[Union[torch.Tensor,dict]]],
+    control_nets: Union[list,None],
+    noise_shape0: int,
+    device
+):
+    conds_copy = []
+    for p in conds:
+        t: torch.Tensor = p[0] # type: ignore
+        if t.shape[0] < noise_shape0:
+            t = torch.cat([t] * noise_shape0)
+        t = t.to(device)
+        if control_nets is not None and 'control' in p[1]:
+            control_nets += [p[1]['control']] # type: ignore
+        conds_copy += [[t] + p[1:]]
+    return conds_copy
+
+def process_cond_for_models(
+    conds: List[List[Union[torch.Tensor,CondForModels,dict]]],
+    control_nets: list,
+    noise_shape0: int,
+    device
+):
+    assert (
+        all(isinstance(p[0], CondForModels) for p in conds) 
+        or not any(isinstance(p[0], CondForModels) for p in conds)
+    )
+    
+    if isinstance(conds[0][0], CondForModels):
+        sizes = set( len(cast(CondForModels, p[0]).ex) for p in conds )
+        assert len(sizes) == 1, f'number of conditions: {sizes}'
+        size = sizes.pop()
+        
+        #
+        # conds
+        #  + [ CondForModels, dictA ]
+        #  |       .ex + condA for model1
+        #  |           + condA for model2
+        #  |           ...
+        #  |           L condA for model{size}
+        #  + [ CondForModels, dictB ]
+        #  |       .ex + condB for model1
+        #  |           + condB for model2
+        #  |           ...
+        #  |           L condB for model{size}
+        #  ...
+        # 
+        # vvv
+        # 
+        # conds
+        #  + [ [ condA_for_model1, dictA ], [ condB_for_model1, dictB ], ... ]
+        #  + [ [ condA_for_model2, dictA ], [ condB_for_model2, dictB ], ... ]
+        #  ...
+        # 
+        
+        result = []
+        for model_index in range(size):
+            cs = []
+            for cond_for_models in conds:
+                c: CondForModels = cond_for_models[0] # type: ignore
+                rest = cond_for_models[1:]
+                cond = c.ex[model_index]
+                cs.append([cond, *rest])
+            result.append(process_cond(
+                cs,
+                control_nets if model_index == 0 else None,
+                noise_shape0,
+                device
+            ))
+        return result
+    
+    else:
+        return [ process_cond(conds, control_nets, noise_shape0, device) ]
+    
+
 def common_ksampler_xyz(
-    model: Union[ModelPatcher,Iterable[ModelPatcher]],
+    model: ModelPatcher,
     seed: Union[int,List[int]],
     steps: Union[int,List[int]],
     cfg: Union[float,List[float]],
@@ -66,9 +142,6 @@ def common_ksampler_xyz(
     noise_mask = None
     device = model_management.get_torch_device()
 
-    if not isinstance(model, Iterable):
-        model = (model,)
-    
     if not isinstance(seed, list):
         seed = [seed]
     
@@ -99,41 +172,24 @@ def common_ksampler_xyz(
     latent_image = latent_image.to(device)
     cfg_ = cfg_.to(device)
 
-    positive_copy = []
-    negative_copy = []
-
     control_nets = []
-    for p in positive:
-        t = p[0]
-        if t.shape[0] < noise.shape[0]:
-            t = torch.cat([t] * noise.shape[0])
-        t = t.to(device)
-        if 'control' in p[1]:
-            control_nets += [p[1]['control']]
-        positive_copy += [[t] + p[1:]]
-    for n in negative:
-        t = n[0]
-        if t.shape[0] < noise.shape[0]:
-            t = torch.cat([t] * noise.shape[0])
-        t = t.to(device)
-        if 'control' in n[1]:
-            control_nets += [n[1]['control']]
-        negative_copy += [[t] + n[1:]]
+    positive_copies = process_cond_for_models(positive, control_nets, noise.shape[0], device)
+    negative_copies = process_cond_for_models(negative, control_nets, noise.shape[0], device)
 
     control_net_models = []
     for x in control_nets:
         control_net_models += x.get_control_models()
     model_management.load_controlnet_gpu(control_net_models)
 
-    #samplers: List[comfy.samplers.KSampler] = []
     samplers: List[Dict[str,Any]] = []
-    for model_, sampler_name_, scheduler_, steps_ in product(model, sampler_name, scheduler, steps):
+    for (model_index, model_fn), sampler_name_, scheduler_, steps_ in product(enumerate(iterize_model(model)), sampler_name, scheduler, steps):
         if sampler_name_ not in comfy.samplers.KSampler.SAMPLERS:
             raise ValueError(f'unknown sampler name: {sampler_name_}')
         if scheduler_ not in comfy.samplers.KSampler.SCHEDULERS:
             raise ValueError(f'unknown scheduler name: {scheduler_}')
         samplers.append(dict(
-            model=model_,
+            model_index=model_index,
+            model=model_fn,
             steps=steps_,
             device=device,
             sampler=sampler_name_,
@@ -143,12 +199,16 @@ def common_ksampler_xyz(
     
     all_samples: List[torch.Tensor] = []
     for sampler_args in samplers:
-        model_ = sampler_args['model']
+        model_ = sampler_args['model']()
         model_management.load_model_gpu(model_)
         sampler_args['model'] = model_.model
         
+        model_index = sampler_args.pop('model_index')
+        positive_copy = positive_copies[model_index]
+        negative_copy = negative_copies[model_index]
+        
         sampler = comfy.samplers.KSampler(**sampler_args)
-        print(f'XYZ sampler={sampler.sampler}/{sampler.scheduler} {sampler.steps}steps')
+        print(f'XYZ sampler=model@{model_index}/{sampler.sampler}/{sampler.scheduler} {sampler.steps}steps')
         
         samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg_, latent_image=latent_image, start_step=start_step, last_step=last_step, force_full_denoise=force_full_denoise, denoise_mask=noise_mask)
         samples = samples.cpu()
