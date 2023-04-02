@@ -1,5 +1,5 @@
 import folder_paths
-from comfy.sd import load_torch_file
+from comfy.utils import load_torch_file
 
 class StateDictLoader:
     
@@ -46,9 +46,9 @@ class Dict2Model:
         def load_torch_file_hook(*args, **kwargs):
             return weights
         
-        import comfy.sd as sd
-        load_torch_file_org = sd.load_torch_file
-        setattr(sd, 'load_torch_file', load_torch_file_hook)
+        from comfy import utils, sd
+        load_torch_file_org = utils.load_torch_file
+        setattr(utils, 'load_torch_file', load_torch_file_hook)
         
         try:
             return sd.load_checkpoint(config_path, None, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
