@@ -1,0 +1,871 @@
+{
+  "last_node_id": 40,
+  "last_link_id": 63,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "StateDictLoader",
+      "pos": [
+        26,
+        47
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "DICT",
+          "type": "DICT",
+          "links": [
+            43
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "StateDictLoader"
+      },
+      "widgets_values": [
+        "7th_anime_v3_A-fp16.safetensors"
+      ]
+    },
+    {
+      "id": 32,
+      "type": "Dict2Model",
+      "pos": [
+        293,
+        48
+      ],
+      "size": {
+        "0": 210,
+        "1": 98
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "weights",
+          "type": "DICT",
+          "link": 43
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            56
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            54,
+            55
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Dict2Model"
+      },
+      "widgets_values": [
+        "v1-inference_fp16.yaml"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PrimitiveNode",
+      "pos": [
+        33,
+        192
+      ],
+      "size": {
+        "0": 465.44146728515625,
+        "1": 176.32371520996094
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            13
+          ],
+          "slot_index": 0,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Prompt",
+      "properties": {},
+      "widgets_values": [
+        "a cute [girl:boy:0.5] in flower garden, \nclear face, \ninsanely frilled white dress, \nabsurdly long brown hair, \nsmile slightly, \nsmall tiara, \nlong sleeves highneck dress"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PrimitiveNode",
+      "pos": [
+        36,
+        416
+      ],
+      "size": {
+        "0": 464.3414611816406,
+        "1": 193.9237060546875
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            14
+          ],
+          "slot_index": 0,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Negative prompt",
+      "properties": {},
+      "widgets_values": [
+        "(low quality, worst quality:1.4), \nnsfw, \ndutch angle, \nmoles, \ntan skin, \nopened mouth, \ndetached sleeves"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CLIPTextEncode",
+      "pos": [
+        547.1469999999991,
+        127.33800000000001
+      ],
+      "size": {
+        "0": 210,
+        "1": 54
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 54
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 13,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "a cute [girl:boy:0.5] in flower garden, \nclear face, \ninsanely frilled white dress, \nabsurdly long brown hair, \nsmile slightly, \nsmall tiara, \nlong sleeves highneck dress"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CLIPTextEncode",
+      "pos": [
+        546,
+        245
+      ],
+      "size": {
+        "0": 210,
+        "1": 54
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 55
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 14,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "(low quality, worst quality:1.4), \nnsfw, \ndutch angle, \nmoles, \ntan skin, \nopened mouth, \ndetached sleeves"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "EmptyLatentImage",
+      "pos": [
+        548,
+        344
+      ],
+      "size": {
+        "0": 210,
+        "1": 106
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            29
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        512,
+        512,
+        1
+      ]
+    },
+    {
+      "id": 7,
+      "type": "KSamplerSetting",
+      "pos": [
+        809,
+        49
+      ],
+      "size": {
+        "0": 210,
+        "1": 262
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 56
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 10
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 11
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "DICT",
+          "type": "DICT",
+          "links": [
+            15
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSetting"
+      },
+      "widgets_values": [
+        0,
+        false,
+        15,
+        7,
+        "dpmpp_2m",
+        "karras",
+        1
+      ]
+    },
+    {
+      "id": 12,
+      "type": "KSamplerXYZ",
+      "pos": [
+        1074,
+        49
+      ],
+      "size": {
+        "0": 210,
+        "1": 154
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "setting",
+          "type": "DICT",
+          "link": 15
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "seed",
+          "type": "STRING",
+          "link": 62,
+          "widget": {
+            "name": "seed",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          },
+          "slot_index": 2
+        },
+        {
+          "name": "cfg",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "cfg",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          },
+          "slot_index": 4
+        },
+        {
+          "name": "sampler_name",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "sampler_name",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "scheduler",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "scheduler",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          },
+          "slot_index": 6
+        },
+        {
+          "name": "steps",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "steps",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            24
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerXYZ"
+      },
+      "widgets_values": [
+        "1,2,3,4,5",
+        "",
+        "5, 7, 9",
+        "",
+        "karras, normal, simple"
+      ]
+    },
+    {
+      "id": 39,
+      "type": "PrimitiveNode",
+      "pos": [
+        810,
+        358
+      ],
+      "size": {
+        "0": 210,
+        "1": 76
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            62
+          ],
+          "widget": {
+            "name": "seed",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Seeds",
+      "properties": {},
+      "widgets_values": [
+        "1,2,3,4,5"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "VAELoader",
+      "pos": [
+        803.035,
+        505.9440000000002
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            58
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "kl-f8-anime2.ckpt"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "VAELoader",
+      "pos": [
+        803,
+        601
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            59
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "vae-ft-mse-840000-ema-pruned.ckpt"
+      ]
+    },
+    {
+      "id": 38,
+      "type": "VAEIter",
+      "pos": [
+        1060,
+        506
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae1",
+          "type": "VAE",
+          "link": 58
+        },
+        {
+          "name": "vae2",
+          "type": "VAE",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            60
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEIter"
+      }
+    },
+    {
+      "id": 24,
+      "type": "GridImage",
+      "pos": [
+        1590,
+        346
+      ],
+      "size": {
+        "0": 692.8555297851562,
+        "1": 616.837890625
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 61
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GridImage"
+      },
+      "widgets_values": [
+        "ComfyUI-Grid",
+        5,
+        1
+      ]
+    },
+    {
+      "id": 21,
+      "type": "VAEDecodeBatched",
+      "pos": [
+        1327.7530000000013,
+        50
+      ],
+      "size": {
+        "0": 210,
+        "1": 78
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 24
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 60,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            61,
+            63
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecodeBatched"
+      },
+      "widgets_values": [
+        4
+      ]
+    },
+    {
+      "id": 40,
+      "type": "PreviewImage",
+      "pos": [
+        1589,
+        51
+      ],
+      "size": {
+        "0": 210,
+        "1": 250
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 63
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      10,
+      8,
+      0,
+      7,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      11,
+      9,
+      0,
+      7,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      13,
+      14,
+      0,
+      8,
+      1,
+      "STRING"
+    ],
+    [
+      14,
+      15,
+      0,
+      9,
+      1,
+      "STRING"
+    ],
+    [
+      15,
+      7,
+      0,
+      12,
+      0,
+      "DICT"
+    ],
+    [
+      24,
+      12,
+      0,
+      21,
+      0,
+      "LATENT"
+    ],
+    [
+      29,
+      25,
+      0,
+      7,
+      3,
+      "LATENT"
+    ],
+    [
+      43,
+      1,
+      0,
+      32,
+      0,
+      "DICT"
+    ],
+    [
+      54,
+      32,
+      1,
+      8,
+      0,
+      "CLIP"
+    ],
+    [
+      55,
+      32,
+      1,
+      9,
+      0,
+      "CLIP"
+    ],
+    [
+      56,
+      32,
+      0,
+      7,
+      0,
+      "MODEL"
+    ],
+    [
+      58,
+      22,
+      0,
+      38,
+      0,
+      "VAE"
+    ],
+    [
+      59,
+      37,
+      0,
+      38,
+      1,
+      "VAE"
+    ],
+    [
+      60,
+      38,
+      0,
+      21,
+      1,
+      "VAE"
+    ],
+    [
+      61,
+      21,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      62,
+      39,
+      0,
+      12,
+      2,
+      "STRING"
+    ],
+    [
+      63,
+      21,
+      0,
+      40,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

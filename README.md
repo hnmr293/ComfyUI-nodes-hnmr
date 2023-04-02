@@ -1,8 +1,40 @@
 # ComfyUI custom nodes
 
-![](./nodes.png)
+![cover](./examples/workflow_xyz.png)
 
-## Latent nodes
+## Examples
+
+### X/Y/Z-plot
+
+seeds, steps, cfg scales and others
+
+[workflow link](./examples/workflow_xyz.json)
+
+![xyz plot 1](./examples/workflow_xyz.png)
+
+models
+
+[workflow link](./examples/workflow_xyz_model_clip.json)
+
+![xyz plot 2](./examples/workflow_xyz_model_clip.png)
+
+VAEs
+
+[workflow link](./examples/workflow_xyz_vae.json)
+
+![xyz plot 3](./examples/workflow_xyz_vae.png)
+
+### Merge
+
+simple merge and [merge block weighted](https://github.com/bbc-mc/sdweb-merge-block-weighted-gui) (thanks for @bbc-mc)
+
+[workflow link](./examples/workflow_mbw.json)
+
+![merge block weighted](./examples/workflow_mbw.png)
+
+## Node List
+
+### Latent nodes
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
@@ -10,7 +42,7 @@
 |latent|VAEDecodeBatched|`LATENT`, `VAE`, `INT`|`IMAGE`|VAE decoding with specified batch size|
 |latent|VAEEncodeBatched|`IMAGE`, `VAE`, `INT`|`LATENT`|VAE encoding with specified batch size|
 
-## Sampling nodes
+### Sampling nodes
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
@@ -18,7 +50,7 @@
 |sampling|KSamplerOverrided|various|`LATENT`|override sampler's setting defined by `KSamplerSetting`|
 |sampling|KSamplerXYZ|various|`LATENT`|generate latents with values|
 
-## Model nodes and Loader nodes
+### Model nodes and Loader nodes
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
@@ -30,8 +62,8 @@
 |model|CLIPlIter|`CLIP`, `CLIP`|`CLIP`|iterate CLIPs|
 |model|VAElIter|`VAE`, `VAE`|`VAE`|iterate VAEs|
 
-## Output nodes
+### Output nodes
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
-|image|GridImage|||generate single image with specific columns|
+|image|GridImage|||generate single image with specific number of columns|
