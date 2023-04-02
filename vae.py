@@ -1,5 +1,8 @@
+from collections import defaultdict
+from typing import Dict, List
 import torch
 from tqdm import trange
+from .model.iter import try_get_iter
 
 class VAEDecodeBatched:
     def __init__(self, device="cpu"):
@@ -29,14 +32,30 @@ class VAEDecodeBatched:
         s = samples['samples']
         n = s.shape[0]
         
-        results = []
+        iters = try_get_iter(vae)
+        if iters is None:
+            vae_num = 1
+        else:
+            vae_num = len(iters)
+        
+        vae_results: Dict[int,List[torch.Tensor]] = defaultdict(lambda: [])
+        
         for i in trange(0, n, batch_size):
             e = min([i+batch_size, n])
             t = s[i:e, ...]
             v = vae.decode(t)
-            results.append(v)
+            
+            vaes = torch.chunk(v, vae_num)
+            
+            for vn, vv in enumerate(vaes):
+                vae_results[vn].append(vv)
         
-        vs = torch.cat(results)
+        results = []
+        for k in sorted(vae_results.keys()):
+            v = vae_results[k]
+            results.extend(v)
+            
+        vs = torch.cat(results).contiguous()
         return (vs,)
 
 

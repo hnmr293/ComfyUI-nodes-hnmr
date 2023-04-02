@@ -1,4 +1,4 @@
-from typing import List, Callable
+from typing import List, Callable, Any, Optional
 import torch
 import tqdm
 from comfy.sd import ModelPatcher, CLIP, VAE
@@ -13,14 +13,14 @@ class CondForModels(torch.Tensor):
         super().__init__()
         self.ex = ex
 
+ATTR_NAME = 'iter_fn'
+
 def iterize_model(model: ModelPatcher) -> List[Callable[[],ModelPatcher]]:
-    ATTR_NAME = 'iter_fn'
     if not hasattr(model, ATTR_NAME):
         setattr(model, ATTR_NAME, [lambda: model])
     return getattr(model, ATTR_NAME)
 
 def iterize_clip(clip: CLIP) -> List[Callable[[],CLIP]]:
-    ATTR_NAME = 'iter_fn'
     if hasattr(clip, ATTR_NAME):
         return getattr(clip, ATTR_NAME)
     
@@ -47,7 +47,6 @@ def iterize_clip(clip: CLIP) -> List[Callable[[],CLIP]]:
     return getattr(clip, ATTR_NAME)
 
 def iterize_vae(vae: VAE) -> List[Callable[[],VAE]]:
-    ATTR_NAME = 'iter_fn'
     if hasattr(vae, ATTR_NAME):
         return getattr(vae, ATTR_NAME)
     
@@ -73,6 +72,8 @@ def iterize_vae(vae: VAE) -> List[Callable[[],VAE]]:
     
     return getattr(vae, ATTR_NAME)
 
+def try_get_iter(obj) -> Optional[List[Callable[[],Any]]]:
+    return getattr(obj, ATTR_NAME, None)
 
 class ModelIter:
     
