@@ -7,6 +7,7 @@ import comfy.samplers
 from nodes import common_ksampler
 from comfy.sd import ModelPatcher
 from .model.iter import iterize_model, CondForModels
+from .model import merge2
 
 re_int = re.compile(r"\s*([+-]?\s*\d+)\s*")
 re_float = re.compile(r"\s*([+-]?\s*\d+(?:.\d*)?)\s*")
@@ -209,6 +210,10 @@ def common_ksampler_xyz(
         
         sampler = comfy.samplers.KSampler(**sampler_args)
         print(f'XYZ sampler=model@{model_index}/{sampler.sampler}/{sampler.scheduler} {sampler.steps}steps')
+        
+        alphas = merge2.get_current_alpha(model_.model)
+        if alphas is not None:
+            print(f'alpha = {alphas}')
         
         samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg_, latent_image=latent_image, start_step=start_step, last_step=last_step, force_full_denoise=force_full_denoise, denoise_mask=noise_mask)
         samples = samples.cpu()

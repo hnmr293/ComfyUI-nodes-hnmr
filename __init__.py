@@ -4,6 +4,7 @@ from .sample import KSamplerSetting, KSamplerOverrided, KSamplerXYZ
 from .model.loader import StateDictLoader, Dict2Model
 from .model.iter import ModelIter, CLIPIter, VAEIter
 from .model.merge import StateDictMerger, StateDictMergerBlockWeighted
+from .model.merge2 import StateDictMergerBlockWeightedMulti
 from .image import GridImage
 
 NODE_CLASS_MAPPINGS = {
@@ -51,6 +52,10 @@ NODE_CLASS_MAPPINGS = {
     ## merge block weighted
     ## weights should be specified by Text
     'StateDictMergerBlockWeighted': StateDictMergerBlockWeighted,
+    
+    ## merge block weighted
+    ## weights should be specified by Text
+    'StateDictMergerBlockWeightedMulti': StateDictMergerBlockWeightedMulti,
     
     # image
     

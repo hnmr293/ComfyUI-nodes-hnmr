@@ -110,6 +110,21 @@ re_inp = re.compile(r'\.input_blocks\.(\d+)\.')
 re_mid = re.compile(r'\.middle_block\.(\d+)\.')
 re_out = re.compile(r'\.output_blocks\.(\d+)\.')
 
+def block_index(key: str):
+    if not key.startswith('model.diffusion_model.'):
+        return None
+    if 'time_embed' in key:
+        return 0
+    if '.out.' in key:
+        return 24
+    m = re_inp.search(key)
+    if m: return int(m.group(1))
+    m = re_mid.search(key)
+    if m: return 12 + int(m.group(1))
+    m = re_out.search(key)
+    if m: return 13 + int(m.group(1))
+    return None
+
 def weighted_sum_block(
     model_A: Dict[str,torch.Tensor],
     model_B: Dict[str,torch.Tensor],
@@ -121,23 +136,8 @@ def weighted_sum_block(
     print('merging ...')
     print('mode: Block Weighted')
     
-    def index(key: str):
-        if not key.startswith('model.diffusion_model.'):
-            return None
-        if 'time_embed' in key:
-            return 0
-        if '.out.' in key:
-            return 24
-        m = re_inp.search(key)
-        if m: return int(m.group(1))
-        m = re_mid.search(key)
-        if m: return 12 + int(m.group(1))
-        m = re_out.search(key)
-        if m: return 13 + int(m.group(1))
-        return None
-    
     def merge_fn(key, t1, t2):
-        weight_index = index(key)
+        weight_index = block_index(key)
         if weight_index is None:
             alpha = base_alpha
         elif 25 <= weight_index:
