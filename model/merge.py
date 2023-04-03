@@ -11,7 +11,7 @@ def merge(
     half: str,
     ignore_keys_only_in_B: bool = False,
 ):
-    result = dict()
+    result: Dict[str,torch.Tensor] = dict()
     for key in tqdm.tqdm(model_A.keys()):
         if key not in model_B:
             print(f'  key {key} is found in model_A but not model_B')

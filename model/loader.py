@@ -51,7 +51,10 @@ class Dict2Model:
         setattr(utils, 'load_torch_file', load_torch_file_hook)
         
         try:
-            return sd.load_checkpoint(config_path, None, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+            model, clip, vae = sd.load_checkpoint(config_path, None, output_vae=True, output_clip=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
+            assert clip is not None
+            assert vae is not None
+            return (model, clip, vae)
         finally:
             setattr(sd, 'load_torch_file', load_torch_file_org)
 
