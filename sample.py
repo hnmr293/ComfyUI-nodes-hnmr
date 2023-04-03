@@ -204,8 +204,8 @@ def common_ksampler_xyz(
         sampler_args['model'] = model_.model
         
         model_index = sampler_args.pop('model_index')
-        positive_copy = positive_copies[model_index]
-        negative_copy = negative_copies[model_index]
+        positive_copy = positive_copies[model_index % len(positive_copies)]
+        negative_copy = negative_copies[model_index % len(negative_copies)]
         
         sampler = comfy.samplers.KSampler(**sampler_args)
         print(f'XYZ sampler=model@{model_index}/{sampler.sampler}/{sampler.scheduler} {sampler.steps}steps')
