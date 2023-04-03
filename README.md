@@ -28,9 +28,19 @@ VAEs
 
 simple merge and [merge block weighted](https://github.com/bbc-mc/sdweb-merge-block-weighted-gui) (thanks for @bbc-mc)
 
+#### BMW
+
 [workflow link](./examples/workflow_mbw.json)
 
 ![merge block weighted](./examples/workflow_mbw.png)
+
+#### Multi-BMW
+
+BMW with multi-alpha like [supermerger](https://github.com/hako-mikan/sd-webui-supermerger/) (thanks for @hako-mikan)
+
+[workflow link](./examples/workflow_mbw_multi.json)
+
+![multi merge block weighted](./examples/workflow_mbw_multi.png)
 
 ## Node List
 
@@ -58,6 +68,7 @@ simple merge and [merge block weighted](https://github.com/bbc-mc/sdweb-merge-bl
 |model|Dict2Model|`DICT`, (config_file)|`MODEL`|instantiate a model from given state_dict|
 |model|StateDictMerger|`DICT`, `DICT`, `FLOAT`|`MODEL`, `CLIP`, `VAE`|merge two or three models|
 |model|StateDictMergerBlockWeighted|`DICT`, `DICT`|`DICT`|merge two models with per-block weights|
+|model|StateDictMergerBlockWeightedMulti|`MODEL`, `MODEL`, `STRING`|`MODEL`, `CLIP`, `VAE`|merge two models with per-block weights|
 |model|ModelIter|`MODEL`, `MODEL`|`MODEL`|iterate models|
 |model|CLIPlIter|`CLIP`, `CLIP`|`CLIP`|iterate CLIPs|
 |model|VAElIter|`VAE`, `VAE`|`VAE`|iterate VAEs|

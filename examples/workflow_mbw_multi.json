@@ -1,0 +1,892 @@
+{
+  "last_node_id": 22,
+  "last_link_id": 34,
+  "nodes": [
+    {
+      "id": 13,
+      "type": "EmptyLatentImage",
+      "pos": [
+        780,
+        320
+      ],
+      "size": {
+        "0": 210,
+        "1": 106
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            12
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        512,
+        512,
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "KSamplerXYZ",
+      "pos": [
+        1259,
+        43
+      ],
+      "size": {
+        "0": 210,
+        "1": 154
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "setting",
+          "type": "DICT",
+          "link": 13
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "seed",
+          "type": "STRING",
+          "link": 14,
+          "widget": {
+            "name": "seed",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "steps",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "steps",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "cfg",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "cfg",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "sampler_name",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "sampler_name",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        },
+        {
+          "name": "scheduler",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "scheduler",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            15
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerXYZ"
+      },
+      "widgets_values": [
+        "1,2,3,4,5",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PrimitiveNode",
+      "pos": [
+        1016,
+        341
+      ],
+      "size": {
+        "0": 210,
+        "1": 76
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            14
+          ],
+          "slot_index": 0,
+          "widget": {
+            "name": "seed",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Seeds",
+      "properties": {},
+      "widgets_values": [
+        "1,2,3,4,5"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "VAELoader",
+      "pos": [
+        1261,
+        240
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            16
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "kl-f8-anime2.ckpt"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "KSamplerSetting",
+      "pos": [
+        1014,
+        43
+      ],
+      "size": {
+        "0": 210,
+        "1": 262
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 32
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 10
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 11
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "DICT",
+          "type": "DICT",
+          "links": [
+            13
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSamplerSetting"
+      },
+      "widgets_values": [
+        0,
+        false,
+        15,
+        7,
+        "dpmpp_2m",
+        "karras",
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CLIPTextEncode",
+      "pos": [
+        767.1699999999993,
+        104.96999999999997
+      ],
+      "size": {
+        "0": 210,
+        "1": 54
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 33
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 5,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "a cute girl in flower garden, \nclear face, \ninsanely frilled white dress, \nabsurdly long brown hair, \nsmile slightly, \nsmall tiara, \nlong sleeves highneck dress"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        768.1699999999993,
+        213.96999999999989
+      ],
+      "size": {
+        "0": 210,
+        "1": 54
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 34
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 7,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "(low quality, worst quality:1.4), \nnsfw, \ndutch angle, \nmoles, \ntan skin, \nopened mouth, \ndetached sleeves"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PrimitiveNode",
+      "pos": [
+        383,
+        260
+      ],
+      "size": {
+        "0": 350.6499938964844,
+        "1": 189.7899932861328
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            5
+          ],
+          "slot_index": 0,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Prompt",
+      "properties": {},
+      "widgets_values": [
+        "a cute girl in flower garden, \nclear face, \ninsanely frilled white dress, \nabsurdly long brown hair, \nsmile slightly, \nsmall tiara, \nlong sleeves highneck dress"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "PrimitiveNode",
+      "pos": [
+        384,
+        491
+      ],
+      "size": {
+        "0": 350.6499938964844,
+        "1": 189.7899932861328
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            7
+          ],
+          "slot_index": 0,
+          "widget": {
+            "name": "text",
+            "config": [
+              "STRING",
+              {
+                "multiline": true
+              }
+            ]
+          }
+        }
+      ],
+      "title": "Negative prompt",
+      "properties": {},
+      "widgets_values": [
+        "(low quality, worst quality:1.4), \nnsfw, \ndutch angle, \nmoles, \ntan skin, \nopened mouth, \ndetached sleeves"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "PreviewImage",
+      "pos": [
+        1754,
+        42
+      ],
+      "size": {
+        "0": 226.57199096679688,
+        "1": 266.44281005859375
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 20,
+      "type": "GridImage",
+      "pos": [
+        1598,
+        371
+      ],
+      "size": {
+        "0": 910.0509643554688,
+        "1": 634.9358520507812
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 18
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GridImage"
+      },
+      "widgets_values": [
+        "ComfyUI-Grid",
+        5,
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PrimitiveNode",
+      "pos": [
+        14,
+        236
+      ],
+      "size": {
+        "0": 345.14599609375,
+        "1": 313.3401184082031
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            29
+          ],
+          "slot_index": 0,
+          "widget": {
+            "name": "alphas",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        }
+      ],
+      "title": "alpha",
+      "properties": {},
+      "widgets_values": [
+        ".0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0\n\n.0, .1, .3, .5, .7, .9, 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., .9, .7, .5, .3, .1, .0\n\n1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.\n"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "StateDictLoader",
+      "pos": [
+        20,
+        43
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "DICT",
+          "type": "DICT",
+          "links": [
+            30
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "StateDictLoader"
+      },
+      "widgets_values": [
+        "7th_anime_v3_A-fp16.safetensors"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "StateDictLoader",
+      "pos": [
+        20,
+        141
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "DICT",
+          "type": "DICT",
+          "links": [
+            31
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "StateDictLoader"
+      },
+      "widgets_values": [
+        "Basil_mix_fixed.safetensors"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "VAEDecodeBatched",
+      "pos": [
+        1494,
+        43
+      ],
+      "size": {
+        "0": 210,
+        "1": 78
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 15
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            17,
+            18
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecodeBatched"
+      },
+      "widgets_values": [
+        5
+      ]
+    },
+    {
+      "id": 22,
+      "type": "StateDictMergerBlockWeightedMulti",
+      "pos": [
+        384,
+        37
+      ],
+      "size": [
+        277.20001220703125,
+        170
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_A",
+          "type": "DICT",
+          "link": 30
+        },
+        {
+          "name": "model_B",
+          "type": "DICT",
+          "link": 31
+        },
+        {
+          "name": "alphas",
+          "type": "STRING",
+          "link": 29,
+          "widget": {
+            "name": "alphas",
+            "config": [
+              "STRING",
+              {
+                "multiline": true,
+                "default": ""
+              }
+            ]
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            32
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            33,
+            34
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "StateDictMergerBlockWeightedMulti"
+      },
+      "widgets_values": [
+        "A",
+        "True",
+        0,
+        ".0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0, .0\n\n.0, .1, .3, .5, .7, .9, 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., .9, .7, .5, .3, .1, .0\n\n1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.\n",
+        "v1-inference_fp16.yaml"
+      ]
+    }
+  ],
+  "links": [
+    [
+      5,
+      9,
+      0,
+      8,
+      1,
+      "STRING"
+    ],
+    [
+      7,
+      11,
+      0,
+      10,
+      1,
+      "STRING"
+    ],
+    [
+      10,
+      8,
+      0,
+      12,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      11,
+      10,
+      0,
+      12,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      12,
+      13,
+      0,
+      12,
+      3,
+      "LATENT"
+    ],
+    [
+      13,
+      12,
+      0,
+      14,
+      0,
+      "DICT"
+    ],
+    [
+      14,
+      15,
+      0,
+      14,
+      2,
+      "STRING"
+    ],
+    [
+      15,
+      14,
+      0,
+      18,
+      0,
+      "LATENT"
+    ],
+    [
+      16,
+      16,
+      0,
+      18,
+      1,
+      "VAE"
+    ],
+    [
+      17,
+      18,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      18,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      29,
+      5,
+      0,
+      22,
+      2,
+      "STRING"
+    ],
+    [
+      30,
+      1,
+      0,
+      22,
+      0,
+      "DICT"
+    ],
+    [
+      31,
+      2,
+      0,
+      22,
+      1,
+      "DICT"
+    ],
+    [
+      32,
+      22,
+      0,
+      12,
+      0,
+      "MODEL"
+    ],
+    [
+      33,
+      22,
+      1,
+      8,
+      0,
+      "CLIP"
+    ],
+    [
+      34,
+      22,
+      1,
+      10,
+      0,
+      "CLIP"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
