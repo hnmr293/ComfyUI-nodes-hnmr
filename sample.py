@@ -350,7 +350,14 @@ class KSamplerXYZ:
     def parse(self, input: str, cont: Union[Callable[[str],Any],None]):
         vs = [ x.strip() for x in input.split(',') ]
         if cont is not None:
-            vs = [cont(v) for v in vs ]
+            new_vs = []
+            for v in vs:
+                new_v = cont(v)
+                if isinstance(new_v, list):
+                    new_vs += new_v
+                else:
+                    new_vs.append(new_v)
+            vs = new_vs
         return vs
     
     def parse_int(self, input: str):
@@ -365,8 +372,8 @@ class KSamplerXYZ:
         start, end, step = m.group(1), m.group(2), m.group(3)
         if step is None:
             step = 1
-        
-        return list(range(int(start), int(end), int(step)))
+
+        return list(range(int(start), int(end) + 1, int(step)))
     
     def parse_float(self, input: str):
         m = re_float.fullmatch(input)
