@@ -180,7 +180,6 @@ def common_ksampler_xyz(
     control_net_models = []
     for x in control_nets:
         control_net_models += x.get_control_models()
-    model_management.load_controlnet_gpu(control_net_models)
 
     samplers: List[Dict[str,Any]] = []
     for (model_index, model_fn), sampler_name_, scheduler_, steps_ in product(enumerate(iterize_model(model)), sampler_name, scheduler, steps):
@@ -202,6 +201,7 @@ def common_ksampler_xyz(
     for sampler_args in samplers:
         model_ = sampler_args['model']()
         model_management.load_model_gpu(model_)
+        model_management.load_controlnet_gpu(control_net_models)
         sampler_args['model'] = model_.model
         
         model_index = sampler_args.pop('model_index')
