@@ -5,7 +5,8 @@ from .model.loader import StateDictLoader, Dict2Model
 from .model.iter import ModelIter, CLIPIter, VAEIter
 from .model.merge import StateDictMerger, StateDictMergerBlockWeighted
 from .model.merge2 import StateDictMergerBlockWeightedMulti
-from .image import GridImage
+from .image.image import GridImage
+from .image.latenttoimage import LatentToImage, LatentToHist
 
 NODE_CLASS_MAPPINGS = {
     # latent
@@ -15,6 +16,10 @@ NODE_CLASS_MAPPINGS = {
     ## pass latents to VAE separately
     'VAEDecodeBatched': VAEDecodeBatched,
     'VAEEncodeBatched': VAEEncodeBatched,
+    
+    ## convert latent matrix to images
+    'LatentToImage': LatentToImage,
+    'LatentToHist': LatentToHist,
     
     # sampling
     

@@ -51,6 +51,8 @@ BMW with multi-alpha like [supermerger](https://github.com/hako-mikan/sd-webui-s
 |latent|RandomLatentImage|`INT`, `INT`, `INT`|`LATENT`|(width, height, batch_size)|
 |latent|VAEDecodeBatched|`LATENT`, `VAE`, `INT`|`IMAGE`|VAE decoding with specified batch size|
 |latent|VAEEncodeBatched|`IMAGE`, `VAE`, `INT`|`LATENT`|VAE encoding with specified batch size|
+|latent|LatentToImage|`LATENT`, `FLOAT`, `FLOAT`|`IMAGE`|convert 4-ch latent tensor to 4 grayscale images|
+|latent|LatentToHist|`LATENT`, `...`|`IMAGE`|create a histogram of the input latent|
 
 ### Sampling nodes
 
