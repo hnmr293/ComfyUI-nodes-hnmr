@@ -2,7 +2,7 @@ import re
 from itertools import product
 from typing import Callable, List, Dict, Any, Union, Tuple, cast
 import torch
-import model_management # type: ignore
+from comfy import model_management
 import comfy.samplers
 from nodes import common_ksampler
 from comfy.sd import ModelPatcher
