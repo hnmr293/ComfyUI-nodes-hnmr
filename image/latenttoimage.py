@@ -14,8 +14,7 @@ class LatentToImage:
         return {
             'required': {
                 'samples': ('LATENT',),
-                'clamp_min': ('FLOAT', { 'default': -5.0, 'min': -100.0, 'max': 100.0, 'step': 0.01, }),
-                'clamp_max': ('FLOAT', { 'default':  5.0, 'min': -100.0, 'max': 100.0, 'step': 0.01, }),
+                'clamp': ('FLOAT', { 'default': 5.0, 'min': 0.1, 'max': 100.0, 'step': 0.01, }),
             },
             #'optional': {
             #}
@@ -29,25 +28,15 @@ class LatentToImage:
     def execute(
         self,
         samples: dict,
-        clamp_min: float,
-        clamp_max: float,
+        clamp: float,
     ):
         s: torch.Tensor = samples['samples']
         B, C, H, W = s.shape
         assert C == 4
         
-        clamp_min = float(clamp_min)
-        clamp_max = float(clamp_max)
+        clamp = abs(float(clamp))
         
-        if clamp_max < clamp_min:
-            clamp_min, clamp_max = clamp_max, clamp_min
-        
-        if abs(clamp_max - clamp_min) < 1e-3:
-            clamp_min = -5.0
-            clamp_max = 5.0
-        
-        s = s.clamp(min=clamp_min, max=clamp_max)
-        s = (s - clamp_min) / (clamp_max - clamp_min)
+        s = s.abs().clamp(min=0.0, max=clamp) / clamp
         
         images = []
         for b in range(B):
