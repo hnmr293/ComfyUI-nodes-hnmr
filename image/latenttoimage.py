@@ -1,4 +1,7 @@
 import colorsys
+from io import StringIO
+import csv
+from typing import Optional
 import torch
 import torchvision.transforms.functional
 import PIL.Image
@@ -76,7 +79,7 @@ class LatentToHist:
             },
         }
     
-    RETURN_TYPES = ('IMAGE',)
+    RETURN_TYPES = ('IMAGE', 'STRING')
     FUNCTION = 'execute'
 
     CATEGORY = 'latent'
@@ -117,10 +120,12 @@ class LatentToHist:
         else:
             ymax = float(ymax)
         
-        image_tensors = list(self.plot(hists, ymax))
+        sio = StringIO()
+        image_tensors = list(self.plot(hists, ymax, sio))
         
         images = torch.cat(image_tensors)
-        return (images,)
+        
+        return (images, sio.getvalue())
     
     def hist(self, batch_data: torch.Tensor, min_: float, max_: float, bins: int):
         assert batch_data.dim() == 2
@@ -138,11 +143,17 @@ class LatentToHist:
         
         return hists
     
-    def plot(self, hists: list, ymax: float):
+    def plot(self, hists: list, ymax: float, sio: Optional[StringIO] = None):
         try:
             from matplotlib import pyplot as plt
         except Exception as e:
             raise RuntimeError('LatentToHist requires matplotlib. Please install it.')
+        
+        if sio is not None:
+            writer = csv.writer(sio)
+            writer.writerow(['ch', 'value', 'degree'])
+        else:
+            writer = None
         
         def color(c: int, C: int):
             h = c / C
@@ -158,14 +169,22 @@ class LatentToHist:
             for c, (hist, bin_edges) in enumerate(batch_hists):
                 bin_edges = bin_edges.view((1,1,-1)) # batch,in_ch,iW
                 W = W.to(bin_edges.device)
-                x = torch.nn.functional.conv1d(bin_edges, W)
+                x = torch.nn.functional.conv1d(bin_edges, W).squeeze()
+                
+                assert x.shape == hist.shape
                 
                 plot = ax.plot(
-                    x.squeeze(), hist, color=color(c,C),
+                    x, hist, color=color(c,C),
                     linewidth=2, marker='o', markersize=4,
                 )
                 
                 plots.append(plot[0])
+                if writer is not None:
+                    writer.writerows([
+                        # ch, v, d
+                        [c, x[i].item(), hist[i].item()]
+                        for i in range(x.size(-1))
+                    ])
             
             ax.legend(plots, [f'ch={c}' for c in range(C)], loc=2)
             ax.set_ylim(0, ymax)
@@ -182,4 +201,8 @@ class LatentToHist:
             # (C, H, W)
 
             image_tensor = einops.rearrange(image_tensor, 'c h w -> h w c').unsqueeze(0)
+            
+            if sio is not None:
+                sio.flush()
+            
             yield image_tensor

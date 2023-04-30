@@ -8,6 +8,7 @@ from .model.merge2 import StateDictMergerBlockWeightedMulti
 from .image.image import GridImage
 from .image.latenttoimage import LatentToImage, LatentToHist
 from .image.blend_extra import Blend2
+from .outputs import SaveText
 
 NODE_CLASS_MAPPINGS = {
     # latent
@@ -70,4 +71,8 @@ NODE_CLASS_MAPPINGS = {
     
     ## rearrange images to single image with specified columns and gap
     'GridImage': GridImage,
+    
+    # others
+    'SaveText': SaveText, 
+    
 }
