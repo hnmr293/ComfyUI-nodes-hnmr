@@ -148,16 +148,23 @@ class LatentToHist:
             h = c / C
             return colorsys.hsv_to_rgb(h, 1.0, 1.0)
         
+        W = torch.FloatTensor([0.5,0.5]).reshape(1,1,2) # out_ch,in_ch/group,kW
+        
         for batch_hists in hists:
             C = len(batch_hists)
             
             fig, ax = plt.subplots(1, 1, figsize=(6,6))
             plots = []
             for c, (hist, bin_edges) in enumerate(batch_hists):
+                bin_edges = bin_edges.view((1,1,-1)) # batch,in_ch,iW
+                W = W.to(bin_edges.device)
+                x = torch.nn.functional.conv1d(bin_edges, W)
+                
                 plot = ax.plot(
-                    bin_edges[:-1], hist, color=color(c,C),
+                    x.squeeze(), hist, color=color(c,C),
                     linewidth=2, marker='o', markersize=4,
                 )
+                
                 plots.append(plot[0])
             
             ax.legend(plots, [f'ch={c}' for c in range(C)], loc=2)
