@@ -2,7 +2,8 @@ import re
 from itertools import product
 from typing import Callable, List, Dict, Any, Union, Tuple, cast
 import torch
-from comfy import model_management
+import comfy.sample
+import comfy.model_management
 import comfy.samplers
 from nodes import common_ksampler
 from comfy.sd import ModelPatcher
@@ -22,7 +23,7 @@ def frange(start, end, step):
         yield x
         x += step
 
-def get_noise(seeds: List[int], latent_image: torch.Tensor, disable_noise: bool):
+def get_noise(seeds: List[int], latent_image: torch.Tensor, disable_noise: bool, skip: int):
     noises: List[torch.Tensor] = []
     latents: List[torch.Tensor] = []
     
@@ -35,7 +36,7 @@ def get_noise(seeds: List[int], latent_image: torch.Tensor, disable_noise: bool)
         latents.extend([latent_image] * (len(seeds) // latent_image.shape[0]))
     else:
         for s in seeds:
-            noise_ = torch.randn(latent_image.size(), dtype=latent_image.dtype, layout=latent_image.layout, generator=torch.manual_seed(s), device="cpu")
+            noise_ = comfy.sample.prepare_noise(latent_image, s, skip)
             noises.append(noise_)
             latents.append(latent_image)
     
@@ -48,80 +49,79 @@ def get_cfg(noises: torch.Tensor, latent_image: torch.Tensor, cfgs: List[float])
     cf = torch.FloatTensor(cfgs * noises.shape[0])
     return torch.cat(ns), torch.cat(lat), cf[...,None,None,None]
 
-def process_cond(
-    conds: List[List[Union[torch.Tensor,dict]]],
-    control_nets: Union[list,None],
-    noise_shape0: int,
-    device
-):
-    conds_copy = []
-    for p in conds:
-        t: torch.Tensor = p[0] # type: ignore
-        if t.shape[0] < noise_shape0:
-            t = torch.cat([t] * noise_shape0)
-        t = t.to(device)
-        if control_nets is not None and 'control' in p[1]:
-            control_nets += [p[1]['control']] # type: ignore
-        conds_copy += [[t] + p[1:]]
-    return conds_copy
-
 def process_cond_for_models(
-    conds: List[List[Union[torch.Tensor,CondForModels,dict]]],
-    control_nets: list,
-    noise_shape0: int,
-    device
+    cond: List[List[Union[torch.Tensor,CondForModels,dict]]],
+    model_index: int
 ):
+    """
+    select conditioning tensor for the current model
+    """
+    
     assert (
-        all(isinstance(p[0], CondForModels) for p in conds) 
-        or not any(isinstance(p[0], CondForModels) for p in conds)
+        all(isinstance(p[0], CondForModels) for p in cond) 
+        or not any(isinstance(p[0], CondForModels) for p in cond)
     )
     
-    if isinstance(conds[0][0], CondForModels):
-        sizes = set( len(cast(CondForModels, p[0]).ex) for p in conds )
-        assert len(sizes) == 1, f'number of conditions: {sizes}'
-        size = sizes.pop()
-        
-        #
-        # conds
-        #  + [ CondForModels, dictA ]
-        #  |       .ex + condA for model1
-        #  |           + condA for model2
-        #  |           ...
-        #  |           L condA for model{size}
-        #  + [ CondForModels, dictB ]
-        #  |       .ex + condB for model1
-        #  |           + condB for model2
-        #  |           ...
-        #  |           L condB for model{size}
-        #  ...
-        # 
-        # vvv
-        # 
-        # conds
-        #  + [ [ condA_for_model1, dictA ], [ condB_for_model1, dictB ], ... ]
-        #  + [ [ condA_for_model2, dictA ], [ condB_for_model2, dictB ], ... ]
-        #  ...
-        # 
-        
-        result = []
-        for model_index in range(size):
-            cs = []
-            for cond_for_models in conds:
-                c: CondForModels = cond_for_models[0] # type: ignore
-                rest = cond_for_models[1:]
-                cond = c.ex[model_index]
-                cs.append([cond, *rest])
-            result.append(process_cond(
-                cs,
-                control_nets if model_index == 0 else None,
-                noise_shape0,
-                device
-            ))
-        return result
+    if not isinstance(cond[0][0], CondForModels):
+        return cond
     
-    else:
-        return [ process_cond(conds, control_nets, noise_shape0, device) ]
+    sizes = set( len(cast(CondForModels, p[0]).ex) for p in cond )
+    assert len(sizes) == 1, f'number of conditions: {sizes}'
     
+    size = sizes.pop()
+    assert model_index < size
+    
+    #
+    # conds
+    #  + [ CondForModels, dictA ]
+    #  |       .ex + condA for model1
+    #  |           + condA for model2
+    #  |           ...
+    #  |           L condA for model{size}
+    #  + [ CondForModels, dictB ]
+    #  |       .ex + condB for model1
+    #  |           + condB for model2
+    #  |           ...
+    #  |           L condB for model{size}
+    #  ...
+    # 
+    # vvv
+    # 
+    # conds
+    #  + [ [ condA_for_model1, dictA ], [ condB_for_model1, dictB ], ... ]
+    #  + [ [ condA_for_model2, dictA ], [ condB_for_model2, dictB ], ... ]  <- model_index
+    #  ...
+    # 
+    
+    result = []
+    
+    for c, *rest in cond:
+        assert isinstance(c, CondForModels)
+        actual_cond = c.ex[model_index]
+        result.append([actual_cond, *rest])
+    
+    return result
+
+def xyz_args(
+    model: ModelPatcher,
+    samplers: List[str],
+    schedulers: List[str],
+    steps: List[int],
+):
+    for (model_index, model_fn), sampler, scheduler, step in product(enumerate(iterize_model(model)), samplers, schedulers, steps):
+        if sampler not in comfy.samplers.KSampler.SAMPLERS:
+            raise ValueError(f'unknown sampler name: {sampler}')
+        if scheduler not in comfy.samplers.KSampler.SCHEDULERS:
+            raise ValueError(f'unknown scheduler name: {scheduler}')
+        
+        yield (
+            model_index,
+            model_fn,
+            step,
+            sampler,
+            scheduler,
+        )
+
 
 def common_ksampler_xyz(
     model: ModelPatcher,
@@ -139,10 +139,6 @@ def common_ksampler_xyz(
     last_step=None,
     force_full_denoise=False
 ):
-    latent_image = latent["samples"]
-    noise_mask = None
-    device = model_management.get_torch_device()
-
     if not isinstance(seed, list):
         seed = [seed]
     
@@ -158,68 +154,38 @@ def common_ksampler_xyz(
     if not isinstance(scheduler, list):
         scheduler = [scheduler]
     
-    noise, latent_image = get_noise(seed, latent_image, disable_noise)
+    latent_image = latent["samples"]
+    noise_mask = latent.get('noise_mask', None)
+
+    noise, latent_image = get_noise(seed, latent_image, disable_noise, latent.get('batch_index', 0))
     noise, latent_image, cfg_ = get_cfg(noise, latent_image, cfg)
     
-    if "noise_mask" in latent:
-        noise_mask = latent['noise_mask']
-        noise_mask = torch.nn.functional.interpolate(noise_mask[None,None,], size=(noise.shape[2], noise.shape[3]), mode="bilinear")
-        noise_mask = noise_mask.round()
-        noise_mask = torch.cat([noise_mask] * noise.shape[1], dim=1)
-        noise_mask = torch.cat([noise_mask] * noise.shape[0])
-        noise_mask = noise_mask.to(device)
-
-    noise = noise.to(device)
-    latent_image = latent_image.to(device)
-    cfg_ = cfg_.to(device)
-
-    control_nets = []
-    positive_copies = process_cond_for_models(positive, control_nets, noise.shape[0], device)
-    negative_copies = process_cond_for_models(negative, control_nets, noise.shape[0], device)
-
-    control_net_models = []
-    for x in control_nets:
-        control_net_models += x.get_control_models()
-
-    samplers: List[Dict[str,Any]] = []
-    for (model_index, model_fn), sampler_name_, scheduler_, steps_ in product(enumerate(iterize_model(model)), sampler_name, scheduler, steps):
-        if sampler_name_ not in comfy.samplers.KSampler.SAMPLERS:
-            raise ValueError(f'unknown sampler name: {sampler_name_}')
-        if scheduler_ not in comfy.samplers.KSampler.SCHEDULERS:
-            raise ValueError(f'unknown scheduler name: {scheduler_}')
-        samplers.append(dict(
-            model_index=model_index,
-            model=model_fn,
-            steps=steps_,
-            device=device,
-            sampler=sampler_name_,
-            scheduler=scheduler_,
-            denoise=denoise,
-        ))
+    cfg_ = cfg_.to('cuda')
     
     all_samples: List[torch.Tensor] = []
-    for sampler_args in samplers:
-        model_ = sampler_args['model']()
-        model_management.load_model_gpu(model_)
-        model_management.load_controlnet_gpu(control_net_models)
-        sampler_args['model'] = model_.model
+    for (
+        model_index, model_fn, step, sampler, scheduler
+    ) in xyz_args(model, sampler_name, scheduler, steps):
         
-        model_index = sampler_args.pop('model_index')
-        positive_copy = positive_copies[model_index % len(positive_copies)]
-        negative_copy = negative_copies[model_index % len(negative_copies)]
+        current_model = model_fn()
+        positive_copy = process_cond_for_models(positive, model_index)
+        negative_copy = process_cond_for_models(negative, model_index)
         
-        sampler = comfy.samplers.KSampler(**sampler_args)
-        print(f'XYZ sampler=model@{model_index}/{sampler.sampler}/{sampler.scheduler} {sampler.steps}steps')
-        
-        alphas = merge2.get_current_alpha(model_.model)
+        print(f'XYZ sampler=model@{model_index}/{sampler}/{scheduler} {step}steps')
+        alphas = merge2.get_current_alpha(current_model.model)
         if alphas is not None:
             print(f'alpha = {alphas}')
         
-        samples = sampler.sample(noise, positive_copy, negative_copy, cfg=cfg_, latent_image=latent_image, start_step=start_step, last_step=last_step, force_full_denoise=force_full_denoise, denoise_mask=noise_mask)
+        samples = comfy.sample.sample(
+            current_model, noise, step, cfg_, sampler, scheduler,
+            positive_copy, negative_copy, latent_image,
+            denoise=denoise, disable_noise=disable_noise,
+            start_step=start_step, last_step=last_step,
+            force_full_denoise=force_full_denoise, noise_mask=noise_mask
+        )
+        
         samples = samples.cpu()
         all_samples.append(samples)
-    for c in control_nets:
-        c.cleanup()
 
     out = latent.copy()
     out["samples"] = torch.cat(all_samples)
