@@ -75,8 +75,9 @@ BMW with multi-alpha like [supermerger](https://github.com/hako-mikan/sd-webui-s
 |model|CLIPlIter|`CLIP`, `CLIP`|`CLIP`|iterate CLIPs|
 |model|VAElIter|`VAE`, `VAE`|`VAE`|iterate VAEs|
 
-### Output nodes
+### Image nodes
 
 |category|node name|input type|output type|desc.|
 | --- | --- | --- | --- | --- |
-|image|GridImage|||generate single image with specific number of columns|
+|image|ImageBlend2|`IMAGE`, `IMAGE`, `FLOAT`, `STRING`|`IMAGE`|`ImageBlend` with extra blend modes|
+|image|GridImage|`IMAGE`, `INT`, `INT`|`-`|generate single image with specific number of columns|
