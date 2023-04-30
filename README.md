@@ -89,3 +89,9 @@ visualization of 4-channel latent tensor
 | --- | --- | --- | --- | --- |
 |image|ImageBlend2|`IMAGE`, `IMAGE`, `FLOAT`, `STRING`|`IMAGE`|`ImageBlend` with extra blend modes|
 |image|GridImage|`IMAGE`, `INT`, `INT`|`-`|generate single image with specific number of columns|
+
+### Others
+
+|category|node name|input type|output type|desc.|
+| --- | --- | --- | --- | --- |
+|utils|SaveText|`STRING`, `STRING`, `STRING`|`-`|save texts with specified prefix and ext|
