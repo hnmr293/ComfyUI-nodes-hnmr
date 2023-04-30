@@ -42,6 +42,14 @@ BMW with multi-alpha like [supermerger](https://github.com/hako-mikan/sd-webui-s
 
 ![multi merge block weighted](./examples/workflow_mbw_multi.png)
 
+### Latent visualization
+
+visualization of 4-channel latent tensor
+
+[workflow link](./examples/workflow_lat2image.json)
+
+![latent visualization](./examples/workflow_lat2image.png)
+
 ## Node List
 
 ### Latent nodes
