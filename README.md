@@ -79,6 +79,7 @@ visualization of 4-channel latent tensor
 |model|StateDictMerger|`DICT`, `DICT`, `FLOAT`|`MODEL`, `CLIP`, `VAE`|merge two or three models|
 |model|StateDictMergerBlockWeighted|`DICT`, `DICT`|`DICT`|merge two models with per-block weights|
 |model|StateDictMergerBlockWeightedMulti|`MODEL`, `MODEL`, `STRING`|`MODEL`, `CLIP`, `VAE`|merge two models with per-block weights|
+|model|SaveStateDict|`MODEL`, `STRING`, `STRING`|`-`|save state_dict to the output directory|
 |model|ModelIter|`MODEL`, `MODEL`|`MODEL`|iterate models|
 |model|CLIPlIter|`CLIP`, `CLIP`|`CLIP`|iterate CLIPs|
 |model|VAElIter|`VAE`, `VAE`|`VAE`|iterate VAEs|

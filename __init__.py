@@ -5,6 +5,7 @@ from .model.loader import StateDictLoader, Dict2Model
 from .model.iter import ModelIter, CLIPIter, VAEIter
 from .model.merge import StateDictMerger, StateDictMergerBlockWeighted
 from .model.merge2 import StateDictMergerBlockWeightedMulti
+from .model.save import SaveStateDict
 from .image.image import GridImage
 from .image.latenttoimage import LatentToImage, LatentToHist
 from .image.blend_extra import Blend2
@@ -64,6 +65,9 @@ NODE_CLASS_MAPPINGS = {
     ## weights should be specified by Text
     'StateDictMergerBlockWeightedMulti': StateDictMergerBlockWeightedMulti,
     
+    ## save state_dict
+    'SaveStateDict': SaveStateDict,
+    
     # image
     
     ## extra blend mode
@@ -73,6 +77,7 @@ NODE_CLASS_MAPPINGS = {
     'GridImage': GridImage,
     
     # others
+    
     'SaveText': SaveText, 
     
 }
