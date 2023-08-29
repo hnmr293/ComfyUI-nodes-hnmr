@@ -1,7 +1,8 @@
 from typing import List, Callable, Any, Optional
 import torch
 import tqdm
-from comfy.sd import ModelPatcher, CLIP, VAE
+from comfy.sd import CLIP, VAE
+from comfy.model_patcher import ModelPatcher
 
 class CondForModels(torch.Tensor):
     

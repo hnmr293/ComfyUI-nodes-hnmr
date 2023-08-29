@@ -6,7 +6,7 @@ import comfy.sample
 import comfy.model_management
 import comfy.samplers
 from nodes import common_ksampler
-from comfy.sd import ModelPatcher
+from comfy.model_patcher import ModelPatcher
 from .model.iter import iterize_model, CondForModels
 from .model import merge2
 
@@ -355,4 +355,3 @@ class KSamplerXYZ:
             step = 1.0
         
         return list(frange(float(start), float(end), float(step)))
-    
